@@ -8,6 +8,7 @@ package cardstackapplication.view;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import cardstackapplication.logic.DiceRoll;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -167,14 +168,16 @@ public class GUI extends javax.swing.JFrame {
     private void btnPrevNumDiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevNumDiceActionPerformed
         //Code Implementation here
         ArrayList<String> drawnNumbers = new ArrayList<String>();
-        Iterator<Map.Entry<String,String>> iter = dataStorage.entrySet().iterator();
+        /*Iterator<Map.Entry<String,String>> iter = dataStorage.entrySet().iterator();
         Map.Entry<String,String> entry = null;
         while(iter.hasNext()) {
         entry = iter.next();
         }
         String key= entry.getKey();
         drawnNumbers.add(key);
-        System.out.println(key);
+        System.out.println(key);*/
+        ArrayList rValues = (ArrayList) dataStorage.get(diceRoll);
+        System.out.println(rValues.get(2));
         
     }//GEN-LAST:event_btnPrevNumDiceActionPerformed
 
@@ -197,16 +200,18 @@ public class GUI extends javax.swing.JFrame {
                 // Key might be present...
                 if (dataStorage.containsKey(diceRoll)) {
                     
-                    ArrayList<Integer> current = new ArrayList<Integer>();
-                    current = (ArrayList<Integer>) dataStorage.get(0);
-                    System.out.println(current.get(0));
+                    /*
+                    
+                    */
+                    ArrayList rValues = (ArrayList) dataStorage.get(diceRoll);
+                    System.out.println(rValues.get(2));
                     
                 } else {
                    // Definitely no such key
                 int numFaces = Integer.parseInt(numOfFaces.getText());
                 int numDice = Integer.parseInt(numOfDie.getText());
                 int dice;
-                LinkedHashMap num_freq = new LinkedHashMap();
+                ArrayList num_freq = new ArrayList();
                 ArrayList<Integer> distribution = new ArrayList<Integer>();
                 Random rand = new Random();
                 int summation = 0;
@@ -219,7 +224,7 @@ public class GUI extends javax.swing.JFrame {
                     distribution.add(summation);
                 }
                 for (int i = 0; i <= distribution.size(); i++){
-                    num_freq.put(i, Collections.frequency(distribution, i));
+                    num_freq.add(Collections.frequency(distribution, i));
                 }
                 dataStorage.put(diceRoll,num_freq);
             // Get a set of the entries
@@ -241,8 +246,9 @@ public class GUI extends javax.swing.JFrame {
                 diceRoll = numOfDie.getText()+"d"+numOfFaces.getText()+"-"+cardsToDeal.getText();
                 // Key might be present...
                 if (dataStorage.containsKey(diceRoll)) {
-                   ArrayList<Integer> current = new ArrayList<Integer>();
-                    current = (ArrayList<Integer>) dataStorage.get(0);
+                    ArrayList rValues = (ArrayList) dataStorage.get(diceRoll);
+                    System.out.println(rValues.get(2));
+                 
                 } else {
                    // Definitely no such key
                     int numFaces = Integer.parseInt(numOfFaces.getText());
