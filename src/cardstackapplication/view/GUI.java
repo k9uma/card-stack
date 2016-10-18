@@ -8,7 +8,6 @@ package cardstackapplication.view;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import cardstackapplication.logic.DiceRoll;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,8 +26,9 @@ public class GUI extends javax.swing.JFrame {
      */
     DiceRoll dice;
     LinkedHashMap dataStorage = new LinkedHashMap();
-    LinkedHashMap<String, ArrayList> drawnStacks = new LinkedHashMap<String, ArrayList>();
-    LinkedHashMap<String, ArrayList> cardsRemoved = new LinkedHashMap<String, ArrayList>();
+    LinkedHashMap drawnStacks = new LinkedHashMap();
+    LinkedHashMap cardsRemoved = new LinkedHashMap();
+    ArrayList<String> drawnNumbers = new ArrayList<String>();
 
     /**
      * Creates new form GUI
@@ -50,8 +50,8 @@ public class GUI extends javax.swing.JFrame {
         btnPrevNumDice = new javax.swing.JButton();
         btnReqRoll = new javax.swing.JButton();
         btnPeek = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        shuffleStack = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        screen = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -80,55 +80,41 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 726, Short.MAX_VALUE)
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 395, Short.MAX_VALUE)
-        );
-
-        shuffleStack.setText("Shuffle");
-        shuffleStack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                shuffleStackActionPerformed(evt);
-            }
-        });
+        screen.setEditable(false);
+        screen.setBackground(new java.awt.Color(204, 204, 204));
+        screen.setColumns(20);
+        screen.setLineWrap(true);
+        screen.setRows(5);
+        screen.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(screen);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(35, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnPrevNumDice)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnReqRoll)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnPeek, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(shuffleStack, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnPrevNumDice)
+                .addGap(79, 79, 79)
+                .addComponent(btnReqRoll)
+                .addGap(84, 84, 84)
+                .addComponent(btnPeek, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(124, 124, 124))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 692, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(59, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPrevNumDice)
                     .addComponent(btnReqRoll)
-                    .addComponent(btnPeek)
-                    .addComponent(shuffleStack))
+                    .addComponent(btnPeek))
                 .addContainerGap())
         );
 
@@ -161,25 +147,62 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**************************************************************************************************************
-    Previous Number of dice requested => Deal off the stack and store in a list of drawn numbers
-    ***************************************************************************************************************
-    */
-    private void btnPrevNumDiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevNumDiceActionPerformed
-        //Code Implementation here
-        ArrayList<String> drawnNumbers = new ArrayList<String>();
-        /*Iterator<Map.Entry<String,String>> iter = dataStorage.entrySet().iterator();
-        Map.Entry<String,String> entry = null;
-        while(iter.hasNext()) {
-        entry = iter.next();
+    private void btnPeekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPeekActionPerformed
+        // TODO add your handling code here:
+        // TODO Request Dice ROll Functionality
+        JTextField stack = new JTextField();
+        //JTextField cardsToDeal = new JTextField();
+        Object[] message = {
+            "Stack:", stack,
+        };
+
+        int option = JOptionPane.showConfirmDialog(null, message, "Peek", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String diceRolled = stack.getText();
+            // Key might be present...
+            if (dataStorage.containsKey(diceRolled)) {
+                 // Get a set of the entries
+                    Set firstPeek = dataStorage.entrySet();
+
+                    // Get an iterator
+                    Iterator i = firstPeek.iterator();
+
+                    // Display elements
+                    while(i.hasNext()) {
+                        Map.Entry me = (Map.Entry)i.next();
+                        screen.setText("Next Generated Values: ");
+                        String value =  me.getValue().toString();
+                        screen.append(value);
+                    }
+                    // Get a set of the entries
+                    ArrayList cardsR = (ArrayList) cardsRemoved.get(diceRolled);
+                    if(cardsR.isEmpty()){
+                        screen.setText("Empty");
+                    }else{screen.append("Cards Removed: "+cardsR.get(0));
+                    for(int l=0; l<=cardsR.size(); l++){
+                        Object value = cardsR.get(0);
+                        screen.append((String) value);
+                    }}
+                    
+                    // Get a set of the entries
+                    ArrayList cardsD = (ArrayList) drawnStacks.get(diceRolled);
+                    if(cardsD.isEmpty()){
+                        screen.setText("Empty");
+                    }else{
+                    System.out.println(cardsD.get(0));
+                    screen.append("Cards Drawn: "+cardsD.get(0));
+                    for(int m=0; m<=cardsD.size(); m++){
+                        Object value = cardsR.get(0);
+                        screen.append((String) value);
+                    }
+                    }
+                    
+            } else {
+                screen.setText("Stack Doesnt Exist");
+            }
+        }else{
         }
-        String key= entry.getKey();
-        drawnNumbers.add(key);
-        System.out.println(key);*/
-        ArrayList rValues = (ArrayList) dataStorage.get(diceRoll);
-        System.out.println(rValues.get(2));
-        
-    }//GEN-LAST:event_btnPrevNumDiceActionPerformed
+    }//GEN-LAST:event_btnPeekActionPerformed
 
     private void btnReqRollActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReqRollActionPerformed
         // TODO Request Dice ROll Functionality
@@ -193,64 +216,64 @@ public class GUI extends javax.swing.JFrame {
         };
         int cardsDealt = 0;
         int option = JOptionPane.showConfirmDialog(null, message, "Faces, Die, Cards to Deal", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {  
+        if (option == JOptionPane.OK_OPTION) {
             if(cardsToDeal.getText().isEmpty()){
                 cardsDealt = 0;
                 diceRoll = numOfDie.getText()+"d"+numOfFaces.getText()+"-"+Integer.toString(cardsDealt);
                 // Key might be present...
                 if (dataStorage.containsKey(diceRoll)) {
-                    
+
                     /*
-                    
+
                     */
                     ArrayList rValues = (ArrayList) dataStorage.get(diceRoll);
                     System.out.println(rValues.get(2));
-                    
+
                 } else {
-                   // Definitely no such key
-                int numFaces = Integer.parseInt(numOfFaces.getText());
-                int numDice = Integer.parseInt(numOfDie.getText());
-                int dice;
-                ArrayList num_freq = new ArrayList();
-                ArrayList<Integer> distribution = new ArrayList<Integer>();
-                Random rand = new Random();
-                int summation = 0;
-                for ( int roll1 = 1; roll1 <=10000; roll1++ ) {
-                    int total = 0; 
-                    for(int j = 0; j<= numDice; j++){
-                        dice =  rand.nextInt(40)+ 2;
-                        summation = total+dice;
+                    // Definitely no such key
+                    int numFaces = Integer.parseInt(numOfFaces.getText());
+                    int numDice = Integer.parseInt(numOfDie.getText());
+                    int dice;
+                    ArrayList num_freq = new ArrayList();
+                    ArrayList<Integer> distribution = new ArrayList<Integer>();
+                    Random rand = new Random();
+                    int summation = 0;
+                    for ( int roll1 = 1; roll1 <=10000; roll1++ ) {
+                        int total = 0;
+                        for(int j = 0; j<= numDice; j++){
+                            dice =  rand.nextInt(40)+ 2;
+                            summation = total+dice;
+                        }
+                        distribution.add(summation);
                     }
-                    distribution.add(summation);
-                }
-                for (int i = 0; i <= distribution.size(); i++){
-                    num_freq.add(Collections.frequency(distribution, i));
-                }
-                dataStorage.put(diceRoll,num_freq);
-            // Get a set of the entries
-                Set set = dataStorage.entrySet();
+                    for (int i = 0; i <= distribution.size(); i++){
+                        num_freq.add(Collections.frequency(distribution, i));
+                    }
+                    dataStorage.put(diceRoll,num_freq);
+                    // Get a set of the entries
+                    Set set = dataStorage.entrySet();
 
-                // Get an iterator
-                Iterator i = set.iterator();
+                    // Get an iterator
+                    Iterator i = set.iterator();
 
-                // Display elements
-                while(i.hasNext()) {
-                   Map.Entry me = (Map.Entry)i.next();
-                   System.out.print(me.getKey() + ": ");
-                   System.out.println(me.getValue());
+                    // Display elements
+                    while(i.hasNext()) {
+                        Map.Entry me = (Map.Entry)i.next();
+                        System.out.print(me.getKey() + ": ");
+                        System.out.println(me.getValue());
+                    }
+                    int numberofitems = num_freq.size();
+                    System.out.println(numberofitems);
                 }
-                int numberofitems = num_freq.size();
-                System.out.println(numberofitems);
-            }
-        }else{
+            }else{
                 diceRoll = numOfDie.getText()+"d"+numOfFaces.getText()+"-"+cardsToDeal.getText();
                 // Key might be present...
                 if (dataStorage.containsKey(diceRoll)) {
                     ArrayList rValues = (ArrayList) dataStorage.get(diceRoll);
                     System.out.println(rValues.get(2));
-                 
+
                 } else {
-                   // Definitely no such key
+                    // Definitely no such key
                     int numFaces = Integer.parseInt(numOfFaces.getText());
                     int numDice = Integer.parseInt(numOfDie.getText());
                     int numcardsRemoved = Integer.parseInt(cardsToDeal.getText());
@@ -260,7 +283,7 @@ public class GUI extends javax.swing.JFrame {
                     Random rand = new Random();
                     int summation = 0;
                     for ( int roll1 = 1; roll1 <=10000; roll1++ ) {
-                        int total = 0; 
+                        int total = 0;
                         for(int j = 0; j<= numDice; j++){
                             dice =  rand.nextInt(40)+ 2;
                             summation = total+dice;
@@ -270,75 +293,69 @@ public class GUI extends javax.swing.JFrame {
                     //Shuffle the distribution
                     Collections.shuffle(distribution);
                     
-                    //Remove the requested number of cards off the top
-                    /*Iterator<Integer> deal = distribution.iterator();
-                    while(deal.hasNext()){
-                        Integer integer = deal.next();
-                        if(integer < numcardsRemoved){
-                            int value = deal.hasNext()
-                            deal.remove();
-                            cardsRemoved.put(diceRoll, );
-                        }
-                    }*/
                     ArrayList<Integer> cards = new ArrayList<Integer>();
                     for(int i=1; i<=numcardsRemoved; i++){
                         int value = distribution.get(i);
                         distribution.remove(i);
                         cards.add(value);
+                        
                     }
+                    cardsRemoved.put(diceRoll, cards);
                     for (int i = 0; i <= distribution.size(); i++){
                         num_freq.put(i, Collections.frequency(distribution, i));
                     }
                     dataStorage.put(diceRoll,num_freq);
                     // Get a set of the entries
-                        Set set = dataStorage.entrySet();
+                    Set set = dataStorage.entrySet();
 
-                        // Get an iterator
-                        Iterator i = set.iterator();
+                    // Get an iterator
+                    Iterator i = set.iterator();
 
-                        // Display elements
-                        while(i.hasNext()) {
-                           Map.Entry me = (Map.Entry)i.next();
-                           System.out.print(me.getKey() + ": ");
-                           System.out.println(me.getValue());
-                        }
-                        int numberofitems = num_freq.size();
-                        System.out.println(numberofitems);
+                    // Display elements
+                    while(i.hasNext()) {
+                        Map.Entry me = (Map.Entry)i.next();
+                        System.out.print(me.getKey() + ": ");
+                        System.out.println(me.getValue());
+                    }
+                    int numberofitems = num_freq.size();
+                    System.out.println(numberofitems);
                 }
-           }
+            }
         } else {
             System.out.println("Deal later");
-            
+
         }
-        
 
     }//GEN-LAST:event_btnReqRollActionPerformed
 
-    private void btnPeekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPeekActionPerformed
-        // TODO add your handling code here:
-        // TODO Request Dice ROll Functionality
-        JTextField stack = new JTextField();
-        //JTextField cardsToDeal = new JTextField();
-        Object[] message = {
-            "Stack:", stack,
-        };
+    /**************************************************************************************************************
+    Previous Number of dice requested => Deal off the stack and store in a list of drawn numbers
+    ***************************************************************************************************************
+    */
+    private void btnPrevNumDiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrevNumDiceActionPerformed
+        //Get the last dice combination
+        //Get the number of Dice
+        //Draw a number from the Stack and Store it
 
-        int option = JOptionPane.showConfirmDialog(null, message, "Peek", JOptionPane.OK_CANCEL_OPTION);
-        if (option == JOptionPane.OK_OPTION) {
-            diceRoll = stack.getText();
-            // Key might be present...
-            if (dataStorage.containsKey(diceRoll)) {
-               System.out.println("I exist, wanna see my distribution");
-            } else {
-                System.out.println("Stsck Doesnt Exist");
-            }
-        }else{
+        String out = null;
+        Object key = null;
+        LinkedHashMap last = null;
+        for (Iterator it = dataStorage.keySet().iterator(); it.hasNext();) {
+            key = it.next();
+            last = (LinkedHashMap) dataStorage.get(key);
+            //String numberDie = (String) key;
+            String test = (String) last.get(key);
+            drawnNumbers.add(test);
+            cardsRemoved.put(key, drawnNumbers);
+            last.remove(test);
         }
-    }//GEN-LAST:event_btnPeekActionPerformed
-
-    private void shuffleStackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shuffleStackActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_shuffleStackActionPerformed
+        /*
+        Slice the String, Get the the number of dice from the notation <num>d<faces>-<cards dealt>
+        */
+        String numberDice = (String) key;
+        char arr[]=numberDice.toCharArray();
+        screen.setText("Number of Dice: "+arr[0]);
+    }//GEN-LAST:event_btnPrevNumDiceActionPerformed
 
     /**
      * @param args the command line arguments
@@ -387,7 +404,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JButton shuffleStack;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea screen;
     // End of variables declaration//GEN-END:variables
 }
